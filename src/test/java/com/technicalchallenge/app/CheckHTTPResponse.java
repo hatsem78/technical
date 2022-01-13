@@ -1,4 +1,4 @@
-package com.technical.challenge.web.app;
+package com.technicalchallenge.app;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

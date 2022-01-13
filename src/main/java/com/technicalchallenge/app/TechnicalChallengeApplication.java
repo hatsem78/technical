@@ -1,4 +1,4 @@
-package com.technical.challenge.web.app;
+package com.technicalchallenge.app;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
