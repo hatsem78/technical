@@ -22,16 +22,19 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.util.MimeTypeUtils;
+
 import java.util.ArrayList;
 import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(CustumerRestController.class)
-public class TestCustomerAll {
+public class TestCustomerAdd {
 
     @Autowired
     ICustomerService customerServiceImpl;
@@ -74,7 +77,7 @@ public class TestCustomerAll {
     public void getCustomerAllReturnNotFound() throws Exception {
         // When
         final ResultActions result = mockMvc.perform(
-                get("/api/customer/all/")
+                post("/api/customer/add/")
                         .accept(MimeTypeUtils.APPLICATION_JSON_VALUE));
         result.andExpect(status().isOk());
         result.andExpect(content().json("[]"));
@@ -82,18 +85,18 @@ public class TestCustomerAll {
 
     @Test
     public void getAllCustomers() {
-        initGetAllUsersRules();
+        getCustomersList();
         ResponseEntity<List<Customers>> page = custumerRestController.all();
         assertTrue(page.getBody().size() == 1);
     }
 
-    private void initGetAllUsersRules() {
-        List<Customers> page = getCustomersList();
-        when(customerServiceImpl.findAll()).thenReturn((List<Customers>) page);
-    }
+    /*private void initGetAllUsersRules() {
+        List<CustomersResponse> page = initPage();
+        when(customerServiceImpl.findAll()).thenReturn((List<CustomersResponse>) page);
+    }*/
 
-    /*private List<CustomersResponse> initPage() {
-        List<Customers> customersResponseList = new ArrayList<>();
+    private List<CustomersResponse> initPage() {
+        List<CustomersResponse> customersResponseList = new ArrayList<>();
 
         CustomersResponse response = new CustomersResponse();
 
@@ -107,7 +110,7 @@ public class TestCustomerAll {
         }
 
         return customersResponseList;
-    }*/
+    }
 
     private List<Customers> getCustomersList() {
         Country country = new Country("Argentina", "Ag");

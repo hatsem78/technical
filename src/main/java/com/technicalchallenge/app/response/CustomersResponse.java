@@ -5,7 +5,7 @@ import com.technicalchallenge.app.models.entity.DocumentType;
 
 import javax.validation.constraints.NotEmpty;
 
-public class CustomersResponse extends ResponseRequest {
+public class CustomersResponse {
 
     @NotEmpty
     private Long Id;
@@ -30,6 +30,30 @@ public class CustomersResponse extends ResponseRequest {
 
     public CustomersResponse(){
 
+    }
+
+    public CustomersResponse(
+            Integer code,
+            String message,
+            Long id,
+            String lastName,
+            String name,
+            String documentNumber,
+            String gender,
+            int edad,
+            Country country,
+            String nationality,
+            DocumentType documentType
+    ) {
+        Id = id;
+        LastName = lastName;
+        this.name = name;
+        this.documentNumber = documentNumber;
+        this.gender = gender;
+        this.edad = edad;
+        this.country = country;
+        this.nationality = nationality;
+        this.documentType = documentType;
     }
 
     public CustomersResponse(

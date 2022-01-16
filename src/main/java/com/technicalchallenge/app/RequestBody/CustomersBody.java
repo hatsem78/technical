@@ -1,31 +1,11 @@
-package com.technicalchallenge.app.models.entity;
+package com.technicalchallenge.app.RequestBody;
 
 import com.sun.istack.NotNull;
 import com.technicalchallenge.app.exceptionscustom.CustomersUnder18Exception;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotEmpty;
-import java.io.Serializable;
-import java.util.Date;
-import java.util.Optional;
-
-
-@Entity
-@Table(
-        name = "customers",
-        indexes = {
-                @Index(
-                        name = "unique_person",
-                        columnList = "document_type,documentNumber,country,gender",
-                        unique = true
-                )
-        }
-)
-public class Customers implements Serializable {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long Id;
+public class CustomersBody {
+    @NotNull
+    private long id;
 
     @NotNull
     private String lastName;
@@ -42,35 +22,26 @@ public class Customers implements Serializable {
     @NotNull
     private int edad;
 
-    @Column(name = "create_at")
-    @Temporal(TemporalType.DATE)
-    private Date createAt;
-
-    @OneToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "country", nullable = false)
-    private Country country;
-
+    @NotNull
+    private Long country;
 
     @NotNull
     private String nationality;
 
-    @OneToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "document_type", nullable = false)
-    private DocumentType document_type;
+    @NotNull
+    private Long document_type;
 
-    public Customers() {
+    public CustomersBody(){}
 
-    }
-
-    public Customers(
+    public CustomersBody(
             String lastName,
             String name,
             String documentNumber,
             String gender,
             int edad,
-            Country country,
+            Long country,
             String nationality,
-            DocumentType document_type
+            Long document_type
     ) {
         this.lastName = lastName;
         this.name = name;
@@ -82,12 +53,12 @@ public class Customers implements Serializable {
         this.document_type = document_type;
     }
 
-    public Long getId() {
-        return Id;
+    public long getId() {
+        return id;
     }
 
-    public void setId(Long id) {
-        Id = id;
+    public void setId(long id) {
+        this.id = id;
     }
 
     public String getLastName() {
@@ -95,7 +66,7 @@ public class Customers implements Serializable {
     }
 
     public void setLastName(String lastName) {
-        lastName = lastName;
+        this.lastName = lastName;
     }
 
     public String getName() {
@@ -127,25 +98,17 @@ public class Customers implements Serializable {
     }
 
     public void setEdad(int edad) {
-        if (edad < 18) {
+        if (edad < 18){
             throw new CustomersUnder18Exception("the client must be over 18 years old");
         }
         this.edad = edad;
     }
 
-    public Date getCreateAt() {
-        return createAt;
-    }
-
-    public void setCreateAt(Date createAt) {
-        this.createAt = createAt;
-    }
-
-    public Country getCountry() {
+    public Long getCountry() {
         return country;
     }
 
-    public void setCountry(Country country) {
+    public void setCountry(Long country) {
         this.country = country;
     }
 
@@ -157,15 +120,14 @@ public class Customers implements Serializable {
         this.nationality = nationality;
     }
 
-    public DocumentType getDocument_type() {
+    public Long getDocument_type() {
         return document_type;
     }
 
-    public void setDocument_type(DocumentType document_type) {
+    public void setDocument_type(Long document_type) {
         this.document_type = document_type;
     }
 
 
-
-
 }
+
