@@ -66,14 +66,26 @@ public class CustumerRestController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<ResponseRequest> add(@RequestBody @Valid CustomersBody customer, BindingResult errors) throws EntityNotFoundException {
+    public ResponseEntity<ResponseRequest> add(
+            @RequestBody @Valid CustomersBody customer,
+            BindingResult errors
+    ) throws EntityNotFoundException {
 
-        logger.info("AdminUser Controller - create - Begin ;");
+        logger.info("Customer Controller - create - Begin ;");
 
         ResponseRequest response = new ResponseRequest(
-                ResponseCodes.CUSTOMER_DELETE_OK,
+                ResponseCodes.CUSTOMER_CREATION_FAIL,
                 "Customer create ok"
         );
+
+        if (customer.getContact() == null) {
+            response = new ResponseRequest(
+                    ResponseCodes.CUSTOMER_CONTACT_HAVE_ONE_CONTACT,
+                    "Customers must have a contact"
+            );
+
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        }
 
         Optional<Country> country = countryDao.findById(customer.getCountry());
 
@@ -115,12 +127,47 @@ public class CustumerRestController {
 
         if (result == null) {
             response = new ResponseRequest(
-                    ResponseCodes.CUSTOMER_DELETE_FAIL,
+                    ResponseCodes.CUSTOMER_CREATION_FAIL,
+                    "Customer Create fail"
+            );
+        }
+
+        logger.info("Customer Controller - create - End ;");
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+
+    @PutMapping("/update/{customerId}")
+    public ResponseEntity<ResponseRequest> update(
+            @RequestBody @Valid CustomersBody customer,
+            @PathVariable("customerId") long customerId,
+            BindingResult errors
+    ) throws EntityNotFoundException {
+
+        logger.info("Customer Controller - update - Begin ;");
+
+        try {
+            Customers tutorialData = customerService.find(customerId);
+        } catch (Exception ex){
+            throw new CustomersCustomException("Customers not exist");
+        }
+
+        ResponseRequest response = new ResponseRequest(
+                ResponseCodes.CUSTOMER_UPDATE_OK,
+                "Customer update ok"
+        );
+
+        Customers result = customerService.update(customer);
+
+        if (result == null) {
+            response = new ResponseRequest(
+                    ResponseCodes.CUSTOMER_CREATION_FAIL,
                     "Customer delete fail"
             );
         }
 
-        logger.info("AdminUser Controller - create - End ;");
+        logger.info("Customer Controller - create - End ;");
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
@@ -148,11 +195,11 @@ public class CustumerRestController {
 
     @DeleteMapping(path = "delete/{customerId}")
     public ResponseEntity<ResponseRequest>  delete (
-            @PathVariable("customerId") int customerId
+            @PathVariable("customerId") long customerId
     ) throws EntityNotFoundException {
 
         logger.info("Customer delete id {}", customerId);
 
-        return customerService.delete((long) customerId);
+        return customerService.delete(customerId);
     }
 }

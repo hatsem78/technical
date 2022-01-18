@@ -3,9 +3,11 @@ package com.technicalchallenge.app.models.services;
 import com.technicalchallenge.app.RequestBody.CustomersBody;
 import com.technicalchallenge.app.exceptionscustom.CustomersCustomException;
 import com.technicalchallenge.app.exceptionscustom.CustomersUnder18Exception;
+import com.technicalchallenge.app.models.dao.IContactDao;
 import com.technicalchallenge.app.models.dao.ICountryDao;
 import com.technicalchallenge.app.models.dao.ICustomerDao;
 import com.technicalchallenge.app.models.dao.IDocumentTypeDao;
+import com.technicalchallenge.app.models.entity.Contacts;
 import com.technicalchallenge.app.models.entity.Country;
 import com.technicalchallenge.app.models.entity.Customers;
 import com.technicalchallenge.app.models.entity.DocumentType;
@@ -40,13 +42,16 @@ public class CustomerServiceImpl implements ICustomerService {
     @Autowired
     private IDocumentTypeDao documentTypeDao;
 
+    @Autowired
+    private IContactDao contactDao;
+
+
     @Override
     public List<Customers> findAll() {
 
-        List<CustomersResponse> customersResponseList = new ArrayList<>();
         List<Customers> customersList = customerDao.findAll();
 
-        logger.info("CustomerServiceImpl - Find All Customers - Result ;{};", customersResponseList.size());
+        logger.info("CustomerServiceImpl - Find All Customers - Result ;{};", customersList.size());
         return customersList;
     }
 
@@ -54,35 +59,63 @@ public class CustomerServiceImpl implements ICustomerService {
     public Customers save(Customers customers) {
         Customers response = null;
 
-        logger.info("AuthRole - Create User - Init ;{};{};",
+        logger.info("Create User - Init ;{};{};",
                 customers.getLastName(), customers.getName()
         );
 
-        ResponseRequest responseRequest;
-
-
-        /*Customers customer = new Customers(
-                customers.getLastName(),
-                customers.getName(),
-                customers.getDocumentNumber(),
-                customers.getGender(),
-                customers.getEdad(),
-                country.get(),
-                customers.getNationality(),
-                documentType.get()
-        );*/
-
-        //customer.setCreateAt(new Date());
-
         response = customerDao.save(customers);
-
-
 
         logger.info(" Create Customer - Result ;{};{};",
                 ResponseCodes.CUSTOMER_CREATION_OK,
                 "Customer creation ok");
         return response;
+    }
 
+    @Override
+    public Customers update(CustomersBody customer) {
+
+        logger.info("Update User - Init ;{};{};",
+                customer.getLastName(), customer.getName()
+        );
+
+        if (customer.getContact() == null) {
+            throw new CustomersCustomException("Customers must have a contact");
+        }
+
+        Optional<Country> country = countryDao.findById(customer.getCountry());
+
+        Optional<DocumentType> documentType = documentTypeDao.findById(customer.getDocument_type());
+
+        if (country.isEmpty()) {
+            throw new CustomersCustomException("Customers must have a contact");
+        } else if(documentType.isEmpty()){
+            throw new CustomersCustomException("Customers must have a contact");
+        }
+
+        Customers customerSave = new Customers(
+                customer.getLastName(),
+                customer.getName(),
+                customer.getDocumentNumber(),
+                customer.getGender(),
+                customer.getEdad(),
+                country.get(),
+                customer.getNationality(),
+                documentType.get(),
+                customer.getContact()
+        );
+
+        customerSave.setId(customer.getId());
+
+        customerSave.setDocument_type(documentType.get());
+
+        customerSave.setCountry(country.get());
+
+        Customers response = customerDao.save(customerSave);
+
+        logger.info(" Update Customer - Result ;{};{};",
+                ResponseCodes.CUSTOMER_CREATION_OK,
+                "Customer creation ok");
+        return response;
     }
 
     @Override
@@ -92,12 +125,22 @@ public class CustomerServiceImpl implements ICustomerService {
 
         ResponseRequest response = null;
 
+        List<Contacts> deleteContact = contactDao.findContactsByContact_id(customerId);
+
+        if(deleteContact != null){
+            logger.error("Customer-Delete - all contact");
+            for(Contacts contact : deleteContact){
+                contactDao.deleteById(contact.getId());
+            }
+        }
+
         try {
             customerDao.deleteById(customerId);
         } catch (Exception e) {
             logger.error("Customer delete - Exception {}", e.getMessage());
-            throw new CustomersCustomException("Customer delete - Exception not exist customer id: " + customerId);
+            throw new CustomersCustomException("Customer-Delete - no exist customer id:: " + customerId);
         }
+
 
         response = new ResponseRequest(
                 ResponseCodes.CUSTOMER_DELETE_OK,

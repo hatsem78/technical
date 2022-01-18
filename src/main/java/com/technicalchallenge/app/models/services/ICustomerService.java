@@ -16,6 +16,8 @@ public interface ICustomerService {
 
     Customers save(Customers customers);
 
+    Customers update(CustomersBody customers);
+
     ResponseEntity<ResponseRequest> delete(long customerId);
 
     Customers find(Long customers);

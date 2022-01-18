@@ -1,5 +1,6 @@
 package com.technicalchallenge.app.models.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.sun.istack.NotNull;
 import com.technicalchallenge.app.exceptionscustom.CustomersUnder18Exception;
 
@@ -7,7 +8,9 @@ import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 
 @Entity
@@ -50,6 +53,9 @@ public class Customers implements Serializable {
     @JoinColumn(name = "country", nullable = false)
     private Country country;
 
+    @OneToMany(mappedBy = "customers", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Contacts> contact;
+
 
     @NotNull
     private String nationality;
@@ -57,6 +63,7 @@ public class Customers implements Serializable {
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "document_type", nullable = false)
     private DocumentType document_type;
+
 
     public Customers() {
 
@@ -82,6 +89,29 @@ public class Customers implements Serializable {
         this.document_type = document_type;
     }
 
+    public Customers(
+            String lastName,
+            String name,
+            String documentNumber,
+            String gender,
+            int edad,
+            Country country,
+            String nationality,
+            DocumentType document_type,
+            List<Contacts> contact
+
+    ) {
+        this.lastName = lastName;
+        this.name = name;
+        this.documentNumber = documentNumber;
+        this.gender = gender;
+        this.edad = edad;
+        this.country = country;
+        this.nationality = nationality;
+        this.document_type = document_type;
+        this.contact = contact;
+    }
+
     public Long getId() {
         return Id;
     }
@@ -95,7 +125,7 @@ public class Customers implements Serializable {
     }
 
     public void setLastName(String lastName) {
-        lastName = lastName;
+        this.lastName = lastName;
     }
 
     public String getName() {
@@ -127,9 +157,6 @@ public class Customers implements Serializable {
     }
 
     public void setEdad(int edad) {
-        if (edad < 18) {
-            throw new CustomersUnder18Exception("the client must be over 18 years old");
-        }
         this.edad = edad;
     }
 
@@ -165,7 +192,11 @@ public class Customers implements Serializable {
         this.document_type = document_type;
     }
 
+    public List<Contacts> getContact() {
+        return contact;
+    }
 
-
-
+    public void setContact(List<Contacts> contact) {
+        this.contact = contact;
+    }
 }

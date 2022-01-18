@@ -1,7 +1,12 @@
 package com.technicalchallenge.app.RequestBody;
 
 import com.sun.istack.NotNull;
+import com.technicalchallenge.app.exceptionscustom.CustomersCustomException;
 import com.technicalchallenge.app.exceptionscustom.CustomersUnder18Exception;
+import com.technicalchallenge.app.models.entity.Contacts;
+
+import javax.validation.constraints.NotBlank;
+import java.util.List;
 
 public class CustomersBody {
     @NotNull
@@ -30,6 +35,8 @@ public class CustomersBody {
 
     @NotNull
     private Long document_type;
+
+    private List<Contacts> contact;
 
     public CustomersBody(){}
 
@@ -128,6 +135,15 @@ public class CustomersBody {
         this.document_type = document_type;
     }
 
+    public List<Contacts> getContact() {
+        return contact;
+    }
 
+    public void setContact(List<Contacts> contact) {
+        if (contact.size() == 0){
+            throw new CustomersCustomException("Customers must have a contact");
+        }
+        this.contact = contact;
+    }
 }
 
