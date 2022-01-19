@@ -5,6 +5,7 @@ import com.technicalchallenge.app.RequestBody.CustomersBody;
 import com.technicalchallenge.app.models.entity.Customers;
 import com.technicalchallenge.app.response.CustomersResponse;
 import com.technicalchallenge.app.response.ResponseRequest;
+import com.technicalchallenge.app.response.StatisticsResponse;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
@@ -22,6 +23,6 @@ public interface ICustomerService {
 
     Customers find(Long customers);
 
-    CustomersResponse map(Customers customers);
+    StatisticsResponse getStadistic();
 
 }

@@ -11,12 +11,14 @@ import com.technicalchallenge.app.models.entity.DocumentType;
 import com.technicalchallenge.app.models.services.CustomerServiceImpl;
 import com.technicalchallenge.app.response.CustomersResponse;
 import com.technicalchallenge.app.response.ResponseRequest;
+import com.technicalchallenge.app.response.StatisticsResponse;
 import com.technicalchallenge.app.utils.ResponseCodes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
 import org.springframework.validation.BindingResult;
@@ -65,7 +67,7 @@ public class CustumerRestController {
         return new ResponseEntity<List<Customers>>(responseEntity, HttpStatus.OK);
     }
 
-    @PostMapping("/add")
+    @PostMapping(produces={MediaType.APPLICATION_JSON_VALUE},value = "/add" )
     public ResponseEntity<ResponseRequest> add(
             @RequestBody @Valid CustomersBody customer,
             BindingResult errors
@@ -119,6 +121,8 @@ public class CustumerRestController {
         );
 
         customerSave.setDocument_type(documentType.get());
+
+        customerSave.setContact(customer.getContact());
 
         customerSave.setCountry(country.get());
 
@@ -201,5 +205,14 @@ public class CustumerRestController {
         logger.info("Customer delete id {}", customerId);
 
         return customerService.delete(customerId);
+    }
+
+
+    @GetMapping("/stadistic")
+    public ResponseEntity<StatisticsResponse> estadisticas() {
+
+        StatisticsResponse responseEntity = customerService.getStadistic();
+
+        return new ResponseEntity<>(responseEntity, HttpStatus.OK);
     }
 }

@@ -13,6 +13,7 @@ import com.technicalchallenge.app.models.entity.Customers;
 import com.technicalchallenge.app.models.entity.DocumentType;
 import com.technicalchallenge.app.response.CustomersResponse;
 import com.technicalchallenge.app.response.ResponseRequest;
+import com.technicalchallenge.app.response.StatisticsResponse;
 import com.technicalchallenge.app.utils.ResponseCodes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,6 +66,11 @@ public class CustomerServiceImpl implements ICustomerService {
 
         response = customerDao.save(customers);
 
+        for (Contacts contact : response.getContact()) {
+            contact.setCustomers(response);
+            contactDao.save(contact);
+        }
+
         logger.info(" Create Customer - Result ;{};{};",
                 ResponseCodes.CUSTOMER_CREATION_OK,
                 "Customer creation ok");
@@ -88,7 +94,7 @@ public class CustomerServiceImpl implements ICustomerService {
 
         if (country.isEmpty()) {
             throw new CustomersCustomException("Customers must have a contact");
-        } else if(documentType.isEmpty()){
+        } else if (documentType.isEmpty()) {
             throw new CustomersCustomException("Customers must have a contact");
         }
 
@@ -115,6 +121,11 @@ public class CustomerServiceImpl implements ICustomerService {
         logger.info(" Update Customer - Result ;{};{};",
                 ResponseCodes.CUSTOMER_CREATION_OK,
                 "Customer creation ok");
+
+        for (Contacts contact : response.getContact()) {
+            contact.setCustomers(customerSave);
+            contactDao.save(contact);
+        }
         return response;
     }
 
@@ -125,12 +136,14 @@ public class CustomerServiceImpl implements ICustomerService {
 
         ResponseRequest response = null;
 
-        List<Contacts> deleteContact = contactDao.findContactsByContact_id(customerId);
+        Customers customerCcontact = customerDao.getById(customerId);
 
-        if(deleteContact != null){
+        List<Contacts> deleteContact = contactDao.findAllByCustomers(customerCcontact);
+
+        if (deleteContact != null) {
             logger.error("Customer-Delete - all contact");
-            for(Contacts contact : deleteContact){
-                contactDao.deleteById(contact.getId());
+            for (Contacts contact : deleteContact) {
+                contactDao.deleteById(contact.getContact_id());
             }
         }
 
@@ -152,28 +165,15 @@ public class CustomerServiceImpl implements ICustomerService {
         return new ResponseEntity<ResponseRequest>(response, HttpStatus.OK);
     }
 
-
-
     @Override
     public Customers find(Long customers) {
         return customerDao.findById(customers).get();
     }
 
 
-    public CustomersResponse map(Customers customers) {
-        CustomersResponse response = new CustomersResponse(
-                customers.getId(),
-                customers.getLastName(),
-                customers.getName(),
-                customers.getDocumentNumber(),
-                customers.getGender(),
-                customers.getEdad(),
-                customers.getCountry(),
-                customers.getNationality(),
-                customers.getDocument_type()
-        );
-
-        return response;
+    @Override
+    public StatisticsResponse getStadistic() {
+        return customerDao.getStadistic();
     }
 
 }

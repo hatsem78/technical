@@ -97,6 +97,9 @@ public class CustomersBody {
     }
 
     public void setGender(String gender) {
+        if (!"MFX".contains(gender.toUpperCase())){
+            throw new CustomersUnder18Exception("sex not defined");
+        }
         this.gender = gender;
     }
 
