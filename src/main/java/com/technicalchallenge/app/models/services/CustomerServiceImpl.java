@@ -3,14 +3,8 @@ package com.technicalchallenge.app.models.services;
 import com.technicalchallenge.app.RequestBody.CustomersBody;
 import com.technicalchallenge.app.exceptionscustom.CustomersCustomException;
 import com.technicalchallenge.app.exceptionscustom.CustomersUnder18Exception;
-import com.technicalchallenge.app.models.dao.IContactDao;
-import com.technicalchallenge.app.models.dao.ICountryDao;
-import com.technicalchallenge.app.models.dao.ICustomerDao;
-import com.technicalchallenge.app.models.dao.IDocumentTypeDao;
-import com.technicalchallenge.app.models.entity.Contacts;
-import com.technicalchallenge.app.models.entity.Country;
-import com.technicalchallenge.app.models.entity.Customers;
-import com.technicalchallenge.app.models.entity.DocumentType;
+import com.technicalchallenge.app.models.dao.*;
+import com.technicalchallenge.app.models.entity.*;
 import com.technicalchallenge.app.response.CustomersResponse;
 import com.technicalchallenge.app.response.ResponseRequest;
 import com.technicalchallenge.app.response.StatisticsResponse;
@@ -46,6 +40,8 @@ public class CustomerServiceImpl implements ICustomerService {
     @Autowired
     private IContactDao contactDao;
 
+    @Autowired
+    private ICustomersRelationshipDao customersRelationshipDao;
 
     @Override
     public List<Customers> findAll() {
@@ -140,10 +136,20 @@ public class CustomerServiceImpl implements ICustomerService {
 
         List<Contacts> deleteContact = contactDao.findAllByCustomers(customerCcontact);
 
+        List<CustomersRelationship> customersRelationship =
+                customersRelationshipDao.findCustomersRelationshipByCustomerParentOrCustomerRelation(customerCcontact, customerCcontact);
+
         if (deleteContact != null) {
             logger.error("Customer-Delete - all contact");
             for (Contacts contact : deleteContact) {
                 contactDao.deleteById(contact.getContact_id());
+            }
+        }
+
+        if (customersRelationship != null) {
+            logger.error("Customer-Delete - all contact");
+            for (CustomersRelationship relationship : customersRelationship) {
+                customersRelationshipDao.deleteById(relationship.getId());
             }
         }
 
@@ -167,9 +173,15 @@ public class CustomerServiceImpl implements ICustomerService {
 
     @Override
     public Customers find(Long customers) {
-        return customerDao.findById(customers).get();
+        Customers response = null;
+        try {
+            response = customerDao.findById(customers).get();
+        } catch (Exception e) {
+            logger.error("Customer find - Exception {}", e.getMessage());
+            throw new CustomersCustomException("Customer-Find - no exist customer id:: " + customers);
+        }
+        return response;
     }
-
 
     @Override
     public StatisticsResponse getStadistic() {

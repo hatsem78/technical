@@ -1,26 +1,25 @@
 package com.technicalchallenge.app.controller;
 
 import com.technicalchallenge.app.RequestBody.CustomersBody;
+import com.technicalchallenge.app.RequestBody.CustomersRelationshipBody;
 import com.technicalchallenge.app.exceptionscustom.CustomersCustomException;
 import com.technicalchallenge.app.exceptionscustom.EntityNotFoundException;
 import com.technicalchallenge.app.models.dao.ICountryDao;
+import com.technicalchallenge.app.models.dao.ICustomersRelationshipDao;
 import com.technicalchallenge.app.models.dao.IDocumentTypeDao;
-import com.technicalchallenge.app.models.entity.Country;
-import com.technicalchallenge.app.models.entity.Customers;
-import com.technicalchallenge.app.models.entity.DocumentType;
+import com.technicalchallenge.app.models.dao.ITypeRelationshipDao;
+import com.technicalchallenge.app.models.entity.*;
 import com.technicalchallenge.app.models.services.CustomerServiceImpl;
-import com.technicalchallenge.app.response.CustomersResponse;
+import com.technicalchallenge.app.models.services.CustomersRelationshipServiceImpl;
 import com.technicalchallenge.app.response.ResponseRequest;
 import com.technicalchallenge.app.response.StatisticsResponse;
 import com.technicalchallenge.app.utils.ResponseCodes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.MultiValueMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -39,13 +38,22 @@ public class CustumerRestController {
     private CustomerServiceImpl customerService;
 
     @Autowired
+    private ICustomersRelationshipDao customersRelationshipDao;
+
+    @Autowired
+    private ITypeRelationshipDao typeRelationshipDao;
+
+    @Autowired
+    private CustomersRelationshipServiceImpl customersRelationshipService;
+
+    @Autowired
     private ICountryDao countryDao;
 
     @Autowired
     private IDocumentTypeDao documentTypeDao;
 
     @GetMapping(value = {"/index", "/", "/home"})
-    public String index(){
+    public String index() {
         return "Welcome to the technical challenge";
     }
 
@@ -54,7 +62,7 @@ public class CustumerRestController {
 
         List<Customers> responseEntity = customerService.findAll();
 
-        if(responseEntity.isEmpty()) {
+        if (responseEntity.isEmpty()) {
             ResponseRequest documentResponse = new ResponseRequest(
                     400,
                     "Not found any customers"
@@ -67,7 +75,7 @@ public class CustumerRestController {
         return new ResponseEntity<List<Customers>>(responseEntity, HttpStatus.OK);
     }
 
-    @PostMapping(produces={MediaType.APPLICATION_JSON_VALUE},value = "/add" )
+    @PostMapping(produces = {MediaType.APPLICATION_JSON_VALUE}, value = "/add")
     public ResponseEntity<ResponseRequest> add(
             @RequestBody @Valid CustomersBody customer,
             BindingResult errors
@@ -89,7 +97,7 @@ public class CustumerRestController {
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
 
-        Optional<Country> country = countryDao.findById(customer.getCountry());
+        Optional<Country> country = countryDao.findCountryByCountryId(customer.getCountry());
 
         Optional<DocumentType> documentType = documentTypeDao.findById(customer.getDocument_type());
 
@@ -101,7 +109,7 @@ public class CustumerRestController {
 
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
 
-        } else if(documentType.isEmpty()){
+        } else if (documentType.isEmpty()) {
             response = new ResponseRequest(
                     ResponseCodes.DOCUMENT_TYPE_NOT_FOUND,
                     "Document Type not found"
@@ -153,7 +161,7 @@ public class CustumerRestController {
 
         try {
             Customers tutorialData = customerService.find(customerId);
-        } catch (Exception ex){
+        } catch (Exception ex) {
             throw new CustomersCustomException("Customers not exist");
         }
 
@@ -177,14 +185,14 @@ public class CustumerRestController {
     }
 
     @GetMapping(path = "find/{customerId}")
-    public ResponseEntity<Customers>  find (
+    public ResponseEntity<Customers> find(
             @PathVariable("customerId") int customerId
     ) throws EntityNotFoundException {
         logger.info("Customer find id {}", customerId);
 
         Customers responseEntity = customerService.find((long) customerId);
 
-        if(responseEntity == null) {
+        if (responseEntity == null) {
             ResponseRequest documentResponse = new ResponseRequest(
                     400,
                     "The client does not exist"
@@ -198,7 +206,7 @@ public class CustumerRestController {
     }
 
     @DeleteMapping(path = "delete/{customerId}")
-    public ResponseEntity<ResponseRequest>  delete (
+    public ResponseEntity<ResponseRequest> delete(
             @PathVariable("customerId") long customerId
     ) throws EntityNotFoundException {
 
@@ -207,7 +215,6 @@ public class CustumerRestController {
         return customerService.delete(customerId);
     }
 
-
     @GetMapping("/stadistic")
     public ResponseEntity<StatisticsResponse> estadisticas() {
 
@@ -215,4 +222,76 @@ public class CustumerRestController {
 
         return new ResponseEntity<>(responseEntity, HttpStatus.OK);
     }
+
+
+    @PostMapping("/persons")
+    public ResponseEntity<ResponseRequest> personsRelationship(
+            @RequestBody @Valid CustomersRelationshipBody customer
+    ) throws EntityNotFoundException {
+
+        logger.info("Customer Controller - create  relationship - Begin ;");
+
+        ResponseRequest response = new ResponseRequest(
+                ResponseCodes.CUSTOMER_CREATION_FAIL,
+                "Customer relationship create ok"
+        );
+
+        Customers customerParents = customerService.find(customer.getCustomerParent());
+        TypeRelationship relationShips = typeRelationshipDao.getById(customer.getTypeRelationship());
+        Customers customerRelations = customerService.find(customer.getCustomerRelation());
+
+        if (customerParents == null || customerRelations == null) {
+            response = new ResponseRequest(
+                    ResponseCodes.CUSTOMER_NOT_EXIST,
+                    "Customer not exist"
+            );
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        }
+        CustomersRelationship customersRelationship = new CustomersRelationship(
+                customerParents,
+                customerRelations,
+                relationShips
+        );
+
+        customersRelationshipService.save(customersRelationship);
+
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping(path = "relationship/{customerParent}/{customerRelation}")
+    public ResponseEntity<HashMap<String, String>> getRelationship(
+            @PathVariable("customerParent") Long customerParent,
+            @PathVariable("customerRelation") Long customerRelation
+    ) throws EntityNotFoundException {
+        logger.info("Customer getRelationship id {}; : {};", customerParent, customerRelation);
+
+        Customers customerParents = customerService.find(customerParent);
+        Customers customerRelations = customerService.find(customerRelation);
+
+        if (customerParents == null) {
+            throw new CustomersCustomException("CustomerParents does not exist");
+        }
+
+        if (customerRelations == null) {
+            throw new CustomersCustomException("customerRelations does not exist");
+        }
+
+        CustomersRelationship responseEntityRelationship =
+                customersRelationshipDao.findCustomersRelationshipByCustomerParentAndCustomerRelation(
+                        customerParents,
+                        customerRelations
+                );
+
+        if (customerRelations == null) {
+           throw new CustomersCustomException("Relations does not exist");
+        }
+
+        HashMap<String, String> entityRelationship = new HashMap<String, String>();
+
+        entityRelationship.put("Response", responseEntityRelationship.toString());
+
+        return new ResponseEntity<>(entityRelationship, HttpStatus.OK);
+    }
+
 }

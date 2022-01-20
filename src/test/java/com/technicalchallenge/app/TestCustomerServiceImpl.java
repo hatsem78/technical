@@ -59,10 +59,10 @@ public class TestCustomerServiceImpl {
     }
 
     private Optional<Customers> addCustomerOptionalTest() {
-        Country country = new Country("Argentina", "Ag");
+        Country country = new Country(1L, "Argentina", "Ag");
         countryDao.save(country);
 
-        DocumentType documentType = new DocumentType("Documento de identidad", "dni");
+        DocumentType documentType = new DocumentType(1L,"Documento de identidad", "dni");
         documentTypeDao.save(documentType);
 
         Customers customer = new Customers(
@@ -83,10 +83,10 @@ public class TestCustomerServiceImpl {
 
 
     private CustomersBody addCustomerTest() {
-        Country country = new Country("Argentina", "Ag");
+        Country country = new Country(1L, "Argentina", "Ag");
         countryDao.save(country);
 
-        DocumentType documentType = new DocumentType("Documento de identidad", "dni");
+        DocumentType documentType = new DocumentType(1L,"Documento de identidad", "dni");
         documentTypeDao.save(documentType);
 
         CustomersBody customer = new CustomersBody(
@@ -104,10 +104,10 @@ public class TestCustomerServiceImpl {
     }
 
     private Customers addCustomer() {
-        Country country = new Country("Argentina", "Ag");
+        Country country = new Country(1L,"Argentina", "Ag");
         countryDao.save(country);
 
-        DocumentType documentType = new DocumentType("Documento de identidad", "dni");
+        DocumentType documentType = new DocumentType(1L,"Documento de identidad", "dni");
         documentTypeDao.save(documentType);
 
         Customers customer = new Customers(
@@ -125,10 +125,10 @@ public class TestCustomerServiceImpl {
     }
 
     private CustomersResponse addCustomersResponse() {
-        Country country = new Country("Argentina", "Ag");
+        Country country = new Country(1L,"Argentina", "Ag");
         countryDao.save(country);
 
-        DocumentType documentType = new DocumentType("Documento de identidad", "dni");
+        DocumentType documentType = new DocumentType(1L,"Documento de identidad", "dni");
         documentTypeDao.save(documentType);
 
         CustomersResponse customer = new CustomersResponse(
@@ -147,9 +147,9 @@ public class TestCustomerServiceImpl {
     }
 
     private List<Customers> getCustomersList() {
-        Country country = new Country("Argentina", "Ag");
+        Country country = new Country(1L,"Argentina", "Ag");
 
-        DocumentType documentType = new DocumentType("Documento de identidad", "dni");
+        DocumentType documentType = new DocumentType(1L,"Documento de identidad", "dni");
 
         Customers customer = new Customers(
                 "Lopez",

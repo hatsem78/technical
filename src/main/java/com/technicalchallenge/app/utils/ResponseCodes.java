@@ -10,10 +10,15 @@ public class ResponseCodes {
     public final static int CUSTOMER_UPDATE_OK = 102;
     public final static int CUSTOMER_DELETE_FAIL = 103;
     public final static int CUSTOMER_CONTACT_HAVE_ONE_CONTACT = 104;
+    public final static int CUSTOMER_NOT_EXIST = 105;
 
 
     public final static int COUNTRY_NOT_FOUND = 200;
 
     public final static int DOCUMENT_TYPE_NOT_FOUND = 300;
+
+
+    public final static int RELATIONSHIP_OK = 600;
+    public final static int RELATIONSHIP_FAIL = 601;
 
 }

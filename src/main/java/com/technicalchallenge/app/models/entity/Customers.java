@@ -1,16 +1,10 @@
 package com.technicalchallenge.app.models.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.sun.istack.NotNull;
-import com.technicalchallenge.app.exceptionscustom.CustomersUnder18Exception;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotEmpty;
 import java.io.Serializable;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 
 @Entity
@@ -56,6 +50,8 @@ public class Customers implements Serializable {
     @OneToMany(mappedBy = "customers", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Contacts> contact;
 
+    @OneToMany(mappedBy = "id", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CustomersRelationship> customersRelationship;
 
     @NotNull
     private String nationality;
@@ -199,4 +195,5 @@ public class Customers implements Serializable {
     public void setContact(List<Contacts> contact) {
         this.contact = contact;
     }
+
 }

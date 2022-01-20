@@ -5,7 +5,7 @@ import com.technicalchallenge.app.exceptionscustom.CustomersCustomException;
 import com.technicalchallenge.app.exceptionscustom.CustomersUnder18Exception;
 import com.technicalchallenge.app.models.entity.Contacts;
 
-import javax.validation.constraints.NotBlank;
+
 import java.util.List;
 
 public class CustomersBody {
@@ -34,7 +34,7 @@ public class CustomersBody {
     private String nationality;
 
     @NotNull
-    private Long document_type;
+    private Long documentTypeId;
 
     private List<Contacts> contact;
 
@@ -57,7 +57,7 @@ public class CustomersBody {
         this.edad = edad;
         this.country = country;
         this.nationality = nationality;
-        this.document_type = document_type;
+        this.documentTypeId = document_type;
     }
 
     public long getId() {
@@ -131,11 +131,11 @@ public class CustomersBody {
     }
 
     public Long getDocument_type() {
-        return document_type;
+        return documentTypeId;
     }
 
     public void setDocument_type(Long document_type) {
-        this.document_type = document_type;
+        this.documentTypeId = document_type;
     }
 
     public List<Contacts> getContact() {
