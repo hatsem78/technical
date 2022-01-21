@@ -2,31 +2,24 @@ package com.technicalchallenge.app.models.services;
 
 import com.technicalchallenge.app.RequestBody.CustomersBody;
 import com.technicalchallenge.app.exceptionscustom.CustomersCustomException;
-import com.technicalchallenge.app.exceptionscustom.CustomersUnder18Exception;
 import com.technicalchallenge.app.models.dao.*;
 import com.technicalchallenge.app.models.entity.*;
-import com.technicalchallenge.app.response.CustomersResponse;
 import com.technicalchallenge.app.response.ResponseRequest;
 import com.technicalchallenge.app.response.StatisticsResponse;
 import com.technicalchallenge.app.utils.ResponseCodes;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Service
 @Transactional
 public class CustomerServiceImpl implements ICustomerService {
-
-    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
     private ICustomerDao customerDao;
@@ -48,35 +41,61 @@ public class CustomerServiceImpl implements ICustomerService {
 
         List<Customers> customersList = customerDao.findAll();
 
-        logger.info("CustomerServiceImpl - Find All Customers - Result ;{};", customersList.size());
+        log.info("CustomerServiceImpl - Find All Customers - Result ;{};", customersList.size());
         return customersList;
     }
 
     @Override
-    public Customers save(Customers customers) {
-        Customers response = null;
+    public Customers save(CustomersBody customer) {
 
-        logger.info("Create User - Init ;{};{};",
-                customers.getLastName(), customers.getName()
+        if (customer.getContact() == null) {
+            throw new CustomersCustomException("Customers must have a contact id: " + customer.getContact());
+        }
+
+        Optional<Country> country = countryDao.findCountryByCountryId(customer.getCountry());
+
+        Optional<DocumentType> documentType = documentTypeDao.findById(customer.getDocument_type());
+
+        if (country.isEmpty()) {
+            throw new CustomersCustomException("Country not found id: " + country);
+        } else if (documentType.isEmpty()) {
+            throw new CustomersCustomException("Document Type not found id:" + country);
+        }
+
+        Customers customerSave = new Customers(
+                customer.getLastName(),
+                customer.getName(),
+                customer.getDocumentNumber(),
+                customer.getGender(),
+                customer.getEdad(),
+                country.get(),
+                customer.getNationality(),
+                documentType.get()
         );
 
-        response = customerDao.save(customers);
+        customerSave.setDocument_type(documentType.get());
 
-        for (Contacts contact : response.getContact()) {
-            contact.setCustomers(response);
+        customerSave.setContact(customer.getContact());
+
+        customerSave.setCountry(country.get());
+
+        Customers result = customerDao.save(customerSave);
+
+        for (Contacts contact : result.getContact()) {
+            contact.setCustomers(result);
             contactDao.save(contact);
         }
 
-        logger.info(" Create Customer - Result ;{};{};",
+        log.info(" Create Customer - Result ;{};{};",
                 ResponseCodes.CUSTOMER_CREATION_OK,
                 "Customer creation ok");
-        return response;
+        return result;
     }
 
     @Override
     public Customers update(CustomersBody customer) {
 
-        logger.info("Update User - Init ;{};{};",
+        log.info("Update User - Init ;{};{};",
                 customer.getLastName(), customer.getName()
         );
 
@@ -114,7 +133,7 @@ public class CustomerServiceImpl implements ICustomerService {
 
         Customers response = customerDao.save(customerSave);
 
-        logger.info(" Update Customer - Result ;{};{};",
+        log.info(" Update Customer - Result ;{};{};",
                 ResponseCodes.CUSTOMER_CREATION_OK,
                 "Customer creation ok");
 
@@ -128,7 +147,7 @@ public class CustomerServiceImpl implements ICustomerService {
     @Override
     public ResponseEntity<ResponseRequest> delete(long customerId) {
 
-        logger.info("Customer - Delete - Init ;{};{};", customerId);
+        log.info("Customer - Delete - Init ;{};{};", customerId);
 
         ResponseRequest response = null;
 
@@ -140,14 +159,14 @@ public class CustomerServiceImpl implements ICustomerService {
                 customersRelationshipDao.findCustomersRelationshipByCustomerParentOrCustomerRelation(customerCcontact, customerCcontact);
 
         if (deleteContact != null) {
-            logger.error("Customer-Delete - all contact");
+            log.error("Customer-Delete - all contact");
             for (Contacts contact : deleteContact) {
                 contactDao.deleteById(contact.getContact_id());
             }
         }
 
         if (customersRelationship != null) {
-            logger.error("Customer-Delete - all contact");
+            log.error("Customer-Delete - all contact");
             for (CustomersRelationship relationship : customersRelationship) {
                 customersRelationshipDao.deleteById(relationship.getId());
             }
@@ -156,8 +175,8 @@ public class CustomerServiceImpl implements ICustomerService {
         try {
             customerDao.deleteById(customerId);
         } catch (Exception e) {
-            logger.error("Customer delete - Exception {}", e.getMessage());
-            throw new CustomersCustomException("Customer-Delete - no exist customer id:: " + customerId);
+            log.error("Customer delete - Exception {}", e.getMessage());
+            throw new CustomersCustomException("Customer-Delete - no exist customer id: " + customerId);
         }
 
 
@@ -166,7 +185,7 @@ public class CustomerServiceImpl implements ICustomerService {
                 "Customer delete ok"
         );
 
-        logger.info("Customer - Delete - Init ;{}; code {};", customerId, ResponseCodes.CUSTOMER_DELETE_OK);
+        log.info("Customer - Delete - Init ;{}; code {};", customerId, ResponseCodes.CUSTOMER_DELETE_OK);
 
         return new ResponseEntity<ResponseRequest>(response, HttpStatus.OK);
     }
@@ -177,7 +196,7 @@ public class CustomerServiceImpl implements ICustomerService {
         try {
             response = customerDao.findById(customers).get();
         } catch (Exception e) {
-            logger.error("Customer find - Exception {}", e.getMessage());
+            log.error("Customer find - Exception {}", e.getMessage());
             throw new CustomersCustomException("Customer-Find - no exist customer id:: " + customers);
         }
         return response;

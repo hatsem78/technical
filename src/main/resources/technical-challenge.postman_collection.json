@@ -1,0 +1,355 @@
+{
+	"info": {
+		"_postman_id": "f5e862a2-33a2-4c67-96b7-3609a169e658",
+		"name": "technical-challenge",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "customer_add",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"content-type": true
+				}
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "\n{\n\t\"lastName\": \"Lopezc\",\n    \"name\": \"octavio\",\n    \"documentNumber\": \"1321321\",\n    \"gender\": \"f\",\n    \"edad\": 18,\n    \"country\": 2,\n\t\"nationality\": \"argentina\",\n\t\"document_type\": 1,\n    \"contact\": [\n            {\n                \"name\": \"algo\",\n                \"email\": null,\n                \"phone\": null,\n                \"id\": 1\n            },\n            {\n                \"name\": \"algo 2\",\n                \"email\": null,\n                \"phone\": null,\n                \"id\": 2\n            }\n        ]\n}"
+				},
+				"url": {
+					"raw": "http://0.0.0.0:8087/api/customer/add",
+					"protocol": "http",
+					"host": [
+						"0",
+						"0",
+						"0",
+						"0"
+					],
+					"port": "8087",
+					"path": [
+						"api",
+						"customer",
+						"add"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "customer_update",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"content-type": true
+				}
+			},
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "\n{\n\t\"lastName\": \"Lopezc\",\n    \"name\": \"octavio\",\n    \"documentNumber\": \"1321321\",\n    \"gender\": \"x\",\n    \"edad\": 18,\n    \"country\": 1,\n\t\"nationality\": \"argentina\",\n\t\"document_type\": 1,\n    \"contact\": [\n            {\n                \"name\": \"algo\",\n                \"email\": null,\n                \"phone\": null,\n                \"id\": 1\n            },\n            {\n                \"name\": \"algo 2\",\n                \"email\": null,\n                \"phone\": null,\n                \"id\": 2\n            }\n        ]\n}"
+				},
+				"url": {
+					"raw": "http://0.0.0.0:8087/api/customer/update/1",
+					"protocol": "http",
+					"host": [
+						"0",
+						"0",
+						"0",
+						"0"
+					],
+					"port": "8087",
+					"path": [
+						"api",
+						"customer",
+						"update",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "customer_find",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "find",
+						"value": "",
+						"type": "default",
+						"disabled": true
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://0.0.0.0:8087/api/customer/find/4",
+					"protocol": "http",
+					"host": [
+						"0",
+						"0",
+						"0",
+						"0"
+					],
+					"port": "8087",
+					"path": [
+						"api",
+						"customer",
+						"find",
+						"4"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "customer_stadistic",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "find",
+						"value": "",
+						"type": "default",
+						"disabled": true
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://0.0.0.0:8087/api/customer/stadistic",
+					"protocol": "http",
+					"host": [
+						"0",
+						"0",
+						"0",
+						"0"
+					],
+					"port": "8087",
+					"path": [
+						"api",
+						"customer",
+						"stadistic"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "customer_all",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "find",
+						"value": "",
+						"type": "default",
+						"disabled": true
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://0.0.0.0:8087/api/customer/all",
+					"protocol": "http",
+					"host": [
+						"0",
+						"0",
+						"0",
+						"0"
+					],
+					"port": "8087",
+					"path": [
+						"api",
+						"customer",
+						"all"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "customer_person_relationship_add",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "find",
+						"value": "",
+						"type": "default",
+						"disabled": true
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"customerParent\": 3,\n    \"typeRelationship\": 2,\n    \"customerRelation\": 4\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://0.0.0.0:8087/api/customer/persons/",
+					"protocol": "http",
+					"host": [
+						"0",
+						"0",
+						"0",
+						"0"
+					],
+					"port": "8087",
+					"path": [
+						"api",
+						"customer",
+						"persons",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "customer_person_relationship",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "find",
+						"value": "",
+						"type": "default",
+						"disabled": true
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"customerParent\": 1,\n    \"typeRelationship\": 2,\n    \"customerRelation\": 2\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://0.0.0.0:8087/api/customer/relationship/3/4",
+					"protocol": "http",
+					"host": [
+						"0",
+						"0",
+						"0",
+						"0"
+					],
+					"port": "8087",
+					"path": [
+						"api",
+						"customer",
+						"relationship",
+						"3",
+						"4"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "customer_delete",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "find",
+						"value": "",
+						"type": "default",
+						"disabled": true
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://0.0.0.0:8087/api/customer/delete/2",
+					"protocol": "http",
+					"host": [
+						"0",
+						"0",
+						"0",
+						"0"
+					],
+					"port": "8087",
+					"path": [
+						"api",
+						"customer",
+						"delete",
+						"2"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

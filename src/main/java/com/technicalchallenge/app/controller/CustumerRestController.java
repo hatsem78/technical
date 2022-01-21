@@ -14,8 +14,7 @@ import com.technicalchallenge.app.models.services.CustomersRelationshipServiceIm
 import com.technicalchallenge.app.response.ResponseRequest;
 import com.technicalchallenge.app.response.StatisticsResponse;
 import com.technicalchallenge.app.utils.ResponseCodes;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -27,12 +26,11 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.*;
 
+@Slf4j
 @Validated
 @RestController
 @RequestMapping("/api/customer")
 public class CustumerRestController {
-
-    private static final Logger logger = LoggerFactory.getLogger(CustumerRestController.class);
 
     @Autowired
     private CustomerServiceImpl customerService;
@@ -77,66 +75,17 @@ public class CustumerRestController {
 
     @PostMapping(produces = {MediaType.APPLICATION_JSON_VALUE}, value = "/add")
     public ResponseEntity<ResponseRequest> add(
-            @RequestBody @Valid CustomersBody customer,
-            BindingResult errors
+            @RequestBody @Valid CustomersBody customer
     ) throws EntityNotFoundException {
 
-        logger.info("Customer Controller - create - Begin ;");
+        log.info("Customer Controller - create - Begin ;");
 
         ResponseRequest response = new ResponseRequest(
                 ResponseCodes.CUSTOMER_CREATION_FAIL,
                 "Customer create ok"
         );
 
-        if (customer.getContact() == null) {
-            response = new ResponseRequest(
-                    ResponseCodes.CUSTOMER_CONTACT_HAVE_ONE_CONTACT,
-                    "Customers must have a contact"
-            );
-
-            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
-        }
-
-        Optional<Country> country = countryDao.findCountryByCountryId(customer.getCountry());
-
-        Optional<DocumentType> documentType = documentTypeDao.findById(customer.getDocument_type());
-
-        if (country.isEmpty()) {
-            response = new ResponseRequest(
-                    ResponseCodes.COUNTRY_NOT_FOUND,
-                    "Country not found"
-            );
-
-            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
-
-        } else if (documentType.isEmpty()) {
-            response = new ResponseRequest(
-                    ResponseCodes.DOCUMENT_TYPE_NOT_FOUND,
-                    "Document Type not found"
-            );
-            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
-        }
-
-        Customers customerSave = new Customers(
-                customer.getLastName(),
-                customer.getName(),
-                customer.getDocumentNumber(),
-                customer.getGender(),
-                customer.getEdad(),
-                country.get(),
-                customer.getNationality(),
-                documentType.get()
-        );
-
-        customerSave.setDocument_type(documentType.get());
-
-        customerSave.setContact(customer.getContact());
-
-        customerSave.setCountry(country.get());
-
-        Customers result = null;
-        result = customerService.save(customerSave);
-
+        Customers result = customerService.save(customer);
         if (result == null) {
             response = new ResponseRequest(
                     ResponseCodes.CUSTOMER_CREATION_FAIL,
@@ -144,7 +93,7 @@ public class CustumerRestController {
             );
         }
 
-        logger.info("Customer Controller - create - End ;");
+        log.info("Customer Controller - create - End ;");
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
@@ -157,7 +106,7 @@ public class CustumerRestController {
             BindingResult errors
     ) throws EntityNotFoundException {
 
-        logger.info("Customer Controller - update - Begin ;");
+        log.info("Customer Controller - update - Begin ;");
 
         try {
             Customers tutorialData = customerService.find(customerId);
@@ -179,18 +128,18 @@ public class CustumerRestController {
             );
         }
 
-        logger.info("Customer Controller - create - End ;");
+        log.info("Customer Controller - create - End ;");
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @GetMapping(path = "find/{customerId}")
     public ResponseEntity<Customers> find(
-            @PathVariable("customerId") int customerId
+            @PathVariable("customerId") Long customerId
     ) throws EntityNotFoundException {
-        logger.info("Customer find id {}", customerId);
+        log.info("Customer find id {}", customerId);
 
-        Customers responseEntity = customerService.find((long) customerId);
+        Customers responseEntity = customerService.find(customerId);
 
         if (responseEntity == null) {
             ResponseRequest documentResponse = new ResponseRequest(
@@ -210,7 +159,7 @@ public class CustumerRestController {
             @PathVariable("customerId") long customerId
     ) throws EntityNotFoundException {
 
-        logger.info("Customer delete id {}", customerId);
+        log.info("Customer delete id {}", customerId);
 
         return customerService.delete(customerId);
     }
@@ -229,7 +178,7 @@ public class CustumerRestController {
             @RequestBody @Valid CustomersRelationshipBody customer
     ) throws EntityNotFoundException {
 
-        logger.info("Customer Controller - create  relationship - Begin ;");
+        log.info("Customer Controller - create  relationship - Begin ;");
 
         ResponseRequest response = new ResponseRequest(
                 ResponseCodes.CUSTOMER_CREATION_FAIL,
@@ -264,7 +213,7 @@ public class CustumerRestController {
             @PathVariable("customerParent") Long customerParent,
             @PathVariable("customerRelation") Long customerRelation
     ) throws EntityNotFoundException {
-        logger.info("Customer getRelationship id {}; : {};", customerParent, customerRelation);
+        log.info("Customer getRelationship id {}; : {};", customerParent, customerRelation);
 
         Customers customerParents = customerService.find(customerParent);
         Customers customerRelations = customerService.find(customerRelation);

@@ -52,6 +52,8 @@ public class TestCustomerServiceImpl {
     @Mock
     private IDocumentTypeDao documentTypeDao;
 
+    public UtilsTest utilsTest = new UtilsTest();
+
     @BeforeEach
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
@@ -98,27 +100,6 @@ public class TestCustomerServiceImpl {
                 country.getId(),
                 "Argentiana",
                 documentType.getId()
-        );
-
-        return  customer;
-    }
-
-    private Customers addCustomer() {
-        Country country = new Country(1L,"Argentina", "Ag");
-        countryDao.save(country);
-
-        DocumentType documentType = new DocumentType(1L,"Documento de identidad", "dni");
-        documentTypeDao.save(documentType);
-
-        Customers customer = new Customers(
-                "Lopez",
-                "Jose",
-                "12313131321",
-                "M",
-                17,
-                country,
-                "Argentiana",
-                documentType
         );
 
         return  customer;
@@ -171,9 +152,9 @@ public class TestCustomerServiceImpl {
     @Test
     void testCustomSave() {
         // Given
-        Customers customer = addCustomer();
+        CustomersBody customer = utilsTest.getCustomersBody();
 
-        when(customerService.save(any(Customers.class))).then(new Answer<Customers>(){
+        when(customerService.save(any(CustomersBody.class))).then(new Answer<Customers>(){
             Long secuencia = 8L;
             @Override
             public Customers answer(InvocationOnMock invocation) throws Throwable {
@@ -189,14 +170,14 @@ public class TestCustomerServiceImpl {
 
         // Then
         assertTrue(customer1.getId() == customer.getId());
-        verify(customerService).save(any(Customers.class));
+        verify(customerService).save(any(CustomersBody.class));
     }
 
     @Test
     void testCustomDelete() {
 
         // Given
-        Customers customer = addCustomer();
+        Customers customer = utilsTest.getAddCustomer();
 
         customer.setId(8L);
 
@@ -225,7 +206,7 @@ public class TestCustomerServiceImpl {
 
     @Test
     void testCustomerfind() throws Exception {
-        Customers customer = addCustomer();
+        Customers customer = utilsTest.getAddCustomer();
 
         Mockito.when(customerService.find(customer.getId()))
                 .thenReturn(customer);
@@ -265,7 +246,7 @@ public class TestCustomerServiceImpl {
     @Tag("customer")
     @Tag("error")
     void testCustomerMustBeOver18YearsOld() {
-        Customers customer = addCustomer();
+        CustomersBody customer = utilsTest.getCustomersBody();
         Exception exception = assertThrows(CustomersUnder18Exception.class, () -> {
             customer.setEdad(5);
         });

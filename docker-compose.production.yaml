@@ -1,0 +1,32 @@
+version: '3.8'
+services:
+  petclinic:
+    build:
+      context: .
+      target: production
+    ports:
+      - 8001:8001
+      - 8002:8002
+    environment:
+      - SERVER_PORT=8002
+      - MYSQL_URL=jdbc:mysql://mysqlserver/technical_challenge
+    volumes:
+      - ./:/app
+    command: ./mvnw spring-boot:run -Dspring-boot.run.profiles=mysql -Dspring-boot.run.jvmArguments="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:8002"
+
+  mysqlserver:
+    image: mysql:8.0.23
+    ports:
+      - 3307:3307
+    environment:
+      - MYSQL_ROOT_PASSWORD=
+      - MYSQL_ALLOW_EMPTY_PASSWORD=true
+      - MYSQL_USER=petclinic
+      - MYSQL_PASSWORD=petclinic
+      - MYSQL_DATABASE=petclinic
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - mysql_config:/etc/mysql/conf.d
+volumes:
+  mysql_data:
+  mysql_config:

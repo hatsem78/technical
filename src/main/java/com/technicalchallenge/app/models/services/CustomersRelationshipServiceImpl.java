@@ -1,12 +1,10 @@
 package com.technicalchallenge.app.models.services;
 
-import com.technicalchallenge.app.controller.CustumerRestController;
 import com.technicalchallenge.app.exceptionscustom.CustomersCustomException;
 import com.technicalchallenge.app.models.dao.ICustomersRelationshipDao;
 import com.technicalchallenge.app.models.entity.CustomersRelationship;
 import com.technicalchallenge.app.response.ResponseRequest;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -14,11 +12,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+@Slf4j
 @Service
 @Transactional
 public class CustomersRelationshipServiceImpl implements ICustomersRelationship {
-
-    private static final Logger logger = LoggerFactory.getLogger(CustumerRestController.class);
 
     @Autowired
     private ICustomersRelationshipDao customersRelationshipDao;
@@ -43,7 +40,7 @@ public class CustomersRelationshipServiceImpl implements ICustomersRelationship 
         try {
             customersRelationshipDao.deleteById(customersRelationship);
         } catch (Exception e) {
-            logger.error("customersRelationshipDao delete - Exception {}", e.getMessage());
+            log.error("customersRelationshipDao delete - Exception {}", e.getMessage());
             throw new CustomersCustomException("customersRelationship-Delete - no exist customersRelationship id:: " + customersRelationship);
         }
         return null;

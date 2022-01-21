@@ -1,0 +1,32 @@
+version: '3.8'
+services:
+  petclinic:
+    build:
+      context: .
+      target: test
+    ports:
+      - 8003:8003
+      - 8004:8004
+    environment:
+      - SERVER_PORT=8004
+      - MYSQL_URL=jdbc:mysql://mysqlserver/technical_challenge
+    volumes:
+      - ./:/app
+
+
+  mysqlserver:
+    image: mysql:8.0.23
+    ports:
+      - 3307:3307
+    environment:
+      - MYSQL_ROOT_PASSWORD=
+      - MYSQL_ALLOW_EMPTY_PASSWORD=true
+      - MYSQL_USER=petclinic
+      - MYSQL_PASSWORD=petclinic
+      - MYSQL_DATABASE=petclinic
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - mysql_config:/etc/mysql/conf.d
+volumes:
+  mysql_data:
+  mysql_config:

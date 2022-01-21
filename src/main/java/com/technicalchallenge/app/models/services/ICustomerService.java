@@ -15,7 +15,7 @@ public interface ICustomerService {
 
     List<Customers> findAll();
 
-    Customers save(Customers customers);
+    Customers save(CustomersBody customers);
 
     Customers update(CustomersBody customers);
 
